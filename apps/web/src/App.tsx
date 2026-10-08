@@ -74,7 +74,7 @@ export default function App() {
     formData.append('audio', audioBlob, 'voice_note.webm');
 
     try {
-      const response = await fetch('https://oroagbeai-api.onrender.com', {
+      const response = await fetch('https://oroagbeai-api.onrender.com/api/asr', {
         method: 'POST',
         body: formData,
       });
@@ -117,7 +117,7 @@ export default function App() {
     }]);
 
     try {
-      const response = await fetch('https://oroagbeai-api.onrender.com', {
+      const response = await fetch('https://oroagbeai-api.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
