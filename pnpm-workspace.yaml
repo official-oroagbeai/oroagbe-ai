@@ -1,0 +1,9 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'services/*'
+allowBuilds:
+  esbuild: false
+  nodemon: false
+minimumReleaseAgeExclude:
+  - vite@8.3.4
