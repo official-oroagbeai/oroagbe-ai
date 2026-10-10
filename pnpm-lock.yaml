@@ -174,6 +174,9 @@ importers:
       cors:
         specifier: ^2.8.6
         version: 2.8.6
+      csv-parser:
+        specifier: ^3.2.1
+        version: 3.2.1
       dotenv:
         specifier: ^18.0.6
         version: 18.0.6
@@ -192,6 +195,9 @@ importers:
       multer:
         specifier: ^2.4.0
         version: 2.4.0
+      openai:
+        specifier: ^7.31.0
+        version: 7.31.0(zod@4.6.5)
       pino:
         specifier: ^10.4.0
         version: 10.4.0
@@ -205,6 +211,9 @@ importers:
       '@types/pino-http':
         specifier: ^6.1.0
         version: 6.1.0
+      eventsource-parser:
+        specifier: ^4.1.1
+        version: 4.1.1
       nodemon:
         specifier: ^1.14.10
         version: 1.19.4
@@ -2091,6 +2100,11 @@ packages:
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
+  csv-parser@3.2.1:
+    resolution: {integrity: sha512-v8RPMSglouR9od735SnwSxLBbCJqEPSbgm1R5qfr8yIiMUCEFjox56kRZid0SvgHJEkxeIEu3+a9QS3YRh7CuA==}
+    engines: {node: '>= 10'}
+    hasBin: true
+
   data-view-buffer@1.0.2:
     resolution: {integrity: sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==}
     engines: {node: '>= 0.4'}
@@ -2289,6 +2303,10 @@ packages:
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
+
+  eventsource-parser@4.1.1:
+    resolution: {integrity: sha512-zaWNqeSLeyzEAAt2Q6aDBRDRk/VnPmsKqvToyGvv6aahvLv71A4Jw7jG93Hckf11zXurbqgsffvpSgKPoeU1Qw==}
+    engines: {node: '>=22.12'}
 
   execa@0.7.0:
     resolution: {integrity: sha512-RztN09XglpYI7aBBrJCPW95jEH7YF1UEPOoX9yDhUTPdp7mK+CQvnLTuD10BNXZ3byLTu2uehZ8EcKT/4CGiFw==}
@@ -3191,6 +3209,30 @@ packages:
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
+
+  openai@7.31.0:
+    resolution: {integrity: sha512-ZGAzauuYb0DdB53qVbIR+X8rdmNtWgiElrrMthbZCVreLcIsQJBwzAIWUbpB2FkQu2Cj6OJ9zJR1EKMUYn4/SQ==}
+    engines: {node: '>=22.0.0'}
+    peerDependencies:
+      '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
+      '@smithy/hash-node': '>=4.3.0 <5'
+      '@smithy/signature-v4': '>=5.4.0 <6'
+      undici: '>=5 <9'
+      ws: ^8.21.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-node':
+        optional: true
+      '@smithy/hash-node':
+        optional: true
+      '@smithy/signature-v4':
+        optional: true
+      undici:
+        optional: true
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   own-keys@1.0.2:
     resolution: {integrity: sha512-19YVAg7T+WTrxggPukVq7DjTv6+PJ867TmhCvBsYwmbFCsZd344rq2Ld1p0wo8f8Qrrhgp82c6FJRqdXWtSEhg==}
@@ -5868,6 +5910,8 @@ snapshots:
 
   csstype@3.2.3: {}
 
+  csv-parser@3.2.1: {}
+
   data-view-buffer@1.0.2:
     dependencies:
       call-bound: 1.0.4
@@ -6142,6 +6186,8 @@ snapshots:
   eta@4.6.0: {}
 
   etag@1.8.1: {}
+
+  eventsource-parser@4.1.1: {}
 
   execa@0.7.0:
     dependencies:
@@ -7035,6 +7081,10 @@ snapshots:
   once@1.4.0:
     dependencies:
       wrappy: 1.0.2
+
+  openai@7.31.0(zod@4.6.5):
+    optionalDependencies:
+      zod: 4.6.5
 
   own-keys@1.0.2:
     dependencies:

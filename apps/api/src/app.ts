@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
 import { logger } from './utils/logger.js';
 import { locationsRouter } from './routes/locations.js';
+import { chatRouter } from './routes/chat.js';
 
 export interface AppOptions {
   rateLimitMax?: number;
@@ -43,6 +44,8 @@ export function createApp(options: AppOptions = {}) {
     }
   });
 
+  app.use('/api/chat', chatRouter);
+  
   app.use('/api', globalLimiter);
 
   // 5. Healthcheck Route
