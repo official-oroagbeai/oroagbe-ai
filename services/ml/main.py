@@ -3,13 +3,14 @@ import unicodedata
 from contextlib import asynccontextmanager
 from typing import List, Optional
 
+import io
 import torch
 import torch.nn.functional as F
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, pipeline
 
 MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "intfloat/multilingual-e5-small")
 
@@ -128,6 +129,22 @@ async def embed(payload: EmbedRequest):
         embeddings=vectors,
         dimensions=dimensions
     )
+device = "cuda" if torch.cuda.is_available() else "cpu"
+asr_pipeline = pipeline(
+    "automatic-speech-recognition",
+    model="NCAIR1/N-ATLaS",
+    device=device
+)
+
+@app.post("/asr")
+async def transcribe_audio_local(audio: UploadFile = File(...)):
+    contents = await audio.read()
+    result = asr_pipeline(contents)
+    return {
+        "text": result.get("text", "").strip(),
+        "model": "NCAIR1/N-ATLaS",
+        "device": device
+    }
 
 if __name__ == "__main__":
     import uvicorn
