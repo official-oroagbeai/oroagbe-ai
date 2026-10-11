@@ -77,7 +77,6 @@ export default function App() {
     formData.append('audio', audioBlob, 'voice_note.webm');
 
     try {
-      // UPDATED: Use dynamic API_BASE
       const response = await fetch(`${API_BASE}/api/asr`, {
         method: 'POST',
         body: formData,
@@ -123,15 +122,16 @@ export default function App() {
     try {
       try {
         // Call OpenAI directly via the global Puter CDN object
-        const response = await (window as any).puter.ai.chat(text, {
-          model: 'openai/gpt-5.5'
-        });
+        const response = await (window as any).puter.ai.chat(text);
+
+        // SAFELY EXTRACT THE STRING (Fixes the React Crash)
+        const replyText = response?.message?.content || response?.text || String(response);
 
         setMessages(prev => prev.map(msg =>
-          msg.id === assistantMsgId ? { ...msg, text: response } : msg
+          msg.id === assistantMsgId ? { ...msg, text: replyText } : msg
         ));
       } catch (error) {
-        console.error('AI chat error:', error);
+        console.warn('Puter AI failed, falling back to backend:', error);
 
         const chatResponse = await fetch(`${API_BASE}/api/chat`, {
           method: 'POST',
