@@ -5,6 +5,7 @@ import pinoHttp from 'pino-http';
 import { logger } from './utils/logger.js';
 import { locationsRouter } from './routes/locations.js';
 import { chatRouter } from './routes/chat.js';
+import { webhookRouter } from './routes/webhooks.js';
 
 export interface AppOptions {
   rateLimitMax?: number;
@@ -13,6 +14,10 @@ export interface AppOptions {
 
 export function createApp(options: AppOptions = {}) {
   const app = express();
+  app.use((req, res, next) => {
+  console.log(`>> INCOMING: ${req.method} ${req.url}`);
+  next();
+});
 
   // 1. HTTP Security Headers
   app.use(helmet());
@@ -33,6 +38,8 @@ export function createApp(options: AppOptions = {}) {
   // 3. Body Parsing
   app.use(express.json());
 
+  app.use('/api/webhooks', webhookRouter);
+
   // 4. Global API Rate Limiting (Default: 100 requests per 15 minutes)
   const globalLimiter = rateLimit({
     windowMs: options.rateLimitWindowMs ?? 15 * 60 * 1000,
@@ -45,7 +52,7 @@ export function createApp(options: AppOptions = {}) {
   });
 
   app.use('/api/chat', chatRouter);
-  
+
   app.use('/api', globalLimiter);
 
   // 5. Healthcheck Route
@@ -60,6 +67,8 @@ export function createApp(options: AppOptions = {}) {
 
   // 6. Registered Routers
   app.use('/api/locations', locationsRouter);
+
+
 
   // 7. 404 Fallback
   app.use((_req: Request, res: Response) => {
