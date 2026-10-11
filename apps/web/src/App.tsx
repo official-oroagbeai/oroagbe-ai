@@ -135,19 +135,51 @@ export default function App() {
       timestamp: new Date().toISOString()
     }]);
 
-  } catch (error) {
-    console.error("Puter AI Error:", error);
-    setMessages(prev => [...prev, { 
-      id: Date.now().toString(), 
-      role: 'assistant', 
-      text: 'Aforiji, asise die waye. E jowo e tun gbiyanju.',
-      locationId: 'system',
-      timestamp: new Date().toISOString()
-    }]);
-  } finally {
-    setIsTyping(false);
-  }
-};
+    try {
+      // UPDATED: Use dynamic API_BASE
+      const response = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: text, // <-- CRITICAL FIX: Changed from 'message' to 'query' to match backend schema
+          locationId: '3c30a6ef-bfee-4ee4-b8e4-eb00568d2374'
+        }),
+      });
+
+      if (!response.body) throw new Error("No response body");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            const data = JSON.parse(line.replace('data: ', ''));
+            setMessages(prev => prev.map(msg => 
+              msg.id === assistantMsgId ? { ...msg, text: msg.text + data.text } : msg
+            ));
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      setMessages(prev => [...prev, { 
+        id: Date.now().toString(), 
+        role: 'assistant', 
+        text: 'Aforiji, asise die waye. E jowo e tun gbiyanju.',
+        locationId: 'system',
+        timestamp: new Date().toISOString()
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-gray-50 font-sans">
@@ -230,4 +262,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+}s
