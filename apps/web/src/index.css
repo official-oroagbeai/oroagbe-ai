@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Increase base size from the browser default (16px) to 18px */
+html {
+  font-size: 18px;
+}
+
+/* Optional: Add a slight text shadow to Quattrocento Sans to make it bolder on mobile screens */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

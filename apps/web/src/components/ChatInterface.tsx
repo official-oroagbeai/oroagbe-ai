@@ -1,11 +1,8 @@
-'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Send, 
   Square, 
   Trash2, 
-  Sprout, 
   Languages, 
   MapPin, 
   Volume2, 
@@ -111,7 +108,7 @@ export const ChatInterface: React.FC = () => {
     <div className="flex flex-col h-screen max-w-5xl mx-auto bg-slate-50 dark:bg-slate-950 shadow-2xl border-x border-slate-200 dark:border-slate-800">
       {/* Offline Status Alert Banner */}
       {!isOnline && (
-        <div className="flex items-center justify-center gap-2 bg-amber-600 text-white px-4 py-1.5 text-xs font-semibold">
+        <div className="flex items-center justify-center gap-2 bg-amber-600 text-white px-4 py-1.5 text-sm font-semibold">
           <WifiOff className="h-4 w-4" />
           <span>{t.offlineBanner}</span>
         </div>
@@ -119,18 +116,22 @@ export const ChatInterface: React.FC = () => {
 
       {/* Main Climate Header */}
       <header className="flex flex-wrap items-center justify-between px-6 py-4 bg-emerald-900 text-white border-b border-emerald-800 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-800 border border-emerald-700/60 rounded-xl shadow-inner">
-            <Sprout className="h-6 w-6 text-emerald-300" />
+          <div className="flex items-center gap-3">
+          <div className="bg-white/10 p-1.5 rounded-xl border border-emerald-700/60 shadow-inner flex items-center justify-center">
+            <img 
+              src="/oroagbeai-logo.png" 
+              alt="OroAgbeAI Logo" 
+              className="h-8 w-auto object-contain" 
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-extrabold tracking-tight">{t.title}</h1>
-              <span className="text-[10px] bg-emerald-700/80 text-emerald-100 font-mono px-2 py-0.5 rounded-full border border-emerald-600">
+              <h1 className="text-2xl font-bold tracking-tight">{t.title}</h1>
+              <span className="text-xs bg-emerald-700/80 text-emerald-100 font-mono px-2 py-0.5 rounded-full border border-emerald-600">
                 v1.0 • Osun Pilot
               </span>
             </div>
-            <p className="text-xs text-emerald-200/80 font-medium">{t.tagline}</p>
+            <p className="text-sm text-emerald-200/80 font-medium">{t.tagline}</p>
           </div>
         </div>
 
@@ -138,7 +139,7 @@ export const ChatInterface: React.FC = () => {
           {/* Dual-Sided Mode Selector */}
           <button
             onClick={() => setMode((m) => (m === 'farmer' ? 'extension' : 'farmer'))}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition ${
+            className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border transition ${
               mode === 'extension'
                 ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
                 : 'bg-emerald-800 text-emerald-100 border-emerald-700 hover:bg-emerald-700'
@@ -151,7 +152,7 @@ export const ChatInterface: React.FC = () => {
           {/* Bilingual Toggle */}
           <button
             onClick={() => setLang((prev) => (prev === 'en' ? 'yo' : 'en'))}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-800 border border-emerald-700 hover:bg-emerald-700 transition"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg bg-emerald-800 border border-emerald-700 hover:bg-emerald-700 transition"
           >
             <Languages className="h-4 w-4 text-emerald-300" />
             <span>{lang === 'en' ? 'Yorùbá' : 'English'}</span>
@@ -164,20 +165,20 @@ export const ChatInterface: React.FC = () => {
             className="p-2 text-emerald-300 hover:text-white disabled:opacity-30 transition rounded-lg hover:bg-emerald-800"
             title={t.clearChat}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-5 w-5" />
           </button>
         </div>
       </header>
 
       {/* Microclimate Regional Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 py-2.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-sm">
         <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <MapPin className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <label className="font-semibold text-slate-700 dark:text-slate-300">{t.locationLabel}</label>
           <select
             value={selectedLocation}
             onChange={(e) => setSelectedLocation(e.target.value)}
-            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-2.5 py-1.5 text-slate-800 dark:text-slate-200 font-medium focus:ring-1 focus:ring-emerald-600"
+            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-800 dark:text-slate-200 font-medium focus:ring-1 focus:ring-emerald-600 text-base"
           >
             {OSUN_LOCATIONS.map((loc) => (
               <option key={loc.id} value={loc.id}>
@@ -192,7 +193,7 @@ export const ChatInterface: React.FC = () => {
           <select
             value={selectedCrop}
             onChange={(e) => setSelectedCrop(e.target.value)}
-            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-2.5 py-1.5 text-slate-800 dark:text-slate-200 font-medium focus:ring-1 focus:ring-emerald-600"
+            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-800 dark:text-slate-200 font-medium focus:ring-1 focus:ring-emerald-600 text-base"
           >
             <option value="">{t.cropAll}</option>
             <option value="cassava">{t.cassava}</option>
@@ -211,36 +212,40 @@ export const ChatInterface: React.FC = () => {
       />
 
       {/* Main Chat Stream Container */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-6">
-            <div className="p-4 bg-emerald-100 dark:bg-emerald-950/60 rounded-2xl mb-4 border border-emerald-200 dark:border-emerald-800/80">
-              <Sprout className="h-10 w-10 text-emerald-700 dark:text-emerald-400" />
+            <div className="mb-8">
+              <img 
+                src="/oroagbeai-logo.png" 
+                alt="OroAgbeAI Logo" 
+                className="h-28 w-auto object-contain drop-shadow-md" 
+              />
             </div>
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-3">
               {lang === 'yo'
                 ? 'Ẹ kú àbọ̀ sí OroAgbe AI: Ẹ̀rọ Ìmọ̀ Ọjọ́ & Iṣẹ́-Àgbẹ̀'
                 : 'Welcome to OroAgbe AI: Climate Intelligence Extension'}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-lg mb-6 leading-relaxed">
+            <p className="text-base text-slate-500 dark:text-slate-400 max-w-xl mb-8 leading-relaxed">
               {lang === 'yo'
                 ? 'Ìmọ̀ràn gbígbéṣẹ́ tó ní ààbò fún àwọn olóko Ìpínlẹ̀ Ọ̀ṣun. Béèrè nípa ojú-ọjọ́, ajílẹ̀, àti ìtọ́jú irúgbìn.'
                 : 'Grounded agronomic and weather intelligence for Osun State farms. Ask about microclimate windows, fertilizer envelopes, and pest controls.'}
             </p>
 
             {/* Quick Inquiry Cards */}
-            <div className="w-full max-w-xl text-left">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 tracking-wide uppercase">
+            <div className="w-full max-w-2xl text-left">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300 tracking-wide uppercase">
                 {t.quickPromptsHeading}
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                 {t.quickPrompts.map((p, i) => (
                   <button
                     key={i}
                     onClick={() => handleQuickPrompt(p.query)}
-                    className="p-3 text-left rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-500 hover:shadow-md transition text-xs"
+                    className="p-4 text-left rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-500 hover:shadow-md transition text-base"
                   >
-                    <span className="font-bold text-emerald-800 dark:text-emerald-400 block mb-1">
+                    <span className="font-bold text-emerald-800 dark:text-emerald-400 block mb-2 text-lg">
                       {p.label}
                     </span>
                     <span className="text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
@@ -258,25 +263,27 @@ export const ChatInterface: React.FC = () => {
               className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
             >
               <div
-                className={`max-w-[88%] rounded-2xl px-5 py-4 text-sm shadow-sm ${
+                className={`max-w-[88%] rounded-3xl px-6 py-5 text-lg shadow-md leading-relaxed ${
                   m.role === 'user'
                     ? 'bg-emerald-800 text-white rounded-br-none'
                     : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none'
                 }`}
               >
                 {/* Message Body with React Markdown */}
-                <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed break-words font-sans">
+                <div className="prose prose-lg dark:prose-invert max-w-none break-words font-sans">
                   <ReactMarkdown>{m.content || (isStreaming ? '...' : '')}</ReactMarkdown>
                 </div>
 
                 {/* Deterministic Safety Warning Notice */}
                 {m.safetyNotice && (
-                  <SafetyAlertBanner notice={m.safetyNotice} title={t.safetyAlertTitle} />
+                  <div className="mt-4">
+                    <SafetyAlertBanner notice={m.safetyNotice} title={t.safetyAlertTitle} />
+                  </div>
                 )}
 
                 {/* Extension Officer Deep-Inspection Mode Box */}
                 {mode === 'extension' && m.role === 'assistant' && (
-                  <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 font-mono">
                     <span className="font-bold text-amber-700 dark:text-amber-400">
                       [FIELD AUDIT]: Verified against Open-Meteo Osun Feed & IITA Envelope.
                     </span>
@@ -284,13 +291,13 @@ export const ChatInterface: React.FC = () => {
                 )}
 
                 {/* Footer Controls: Audio Playback & Timestamp */}
-                <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100 dark:border-slate-800/60 text-[10px]">
+                <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-sm">
                   {m.role === 'assistant' && m.content ? (
                     <button
                       onClick={() => handleReadAloud(m.content)}
-                      className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 hover:underline font-semibold"
+                      className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 hover:underline font-semibold"
                     >
-                      <Volume2 className="h-3.5 w-3.5" />
+                      <Volume2 className="h-4 w-4" />
                       <span>{t.readAloud}</span>
                     </button>
                   ) : <span />}
@@ -304,9 +311,9 @@ export const ChatInterface: React.FC = () => {
         )}
 
         {error && (
-          <div className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900 text-red-800 dark:text-red-200 rounded-xl text-xs flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 shrink-0 text-red-600" />
-            <span>{error}</span>
+          <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900 text-red-800 dark:text-red-200 rounded-xl text-base flex items-center gap-3">
+            <ShieldAlert className="h-6 w-6 shrink-0 text-red-600" />
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
@@ -316,34 +323,34 @@ export const ChatInterface: React.FC = () => {
       {/* Input Action Console */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800"
+        className="p-5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800"
       >
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             placeholder={t.inputPlaceholder}
-            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-700"
+            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl px-5 py-4 text-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-700"
           />
 
           {isStreaming ? (
             <button
               type="button"
               onClick={stopStreaming}
-              className="px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-sm transition"
+              className="px-6 py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl flex items-center gap-2 text-base font-bold shadow-sm transition"
             >
-              <Square className="h-4 w-4" />
-              <span>{t.stopButton}</span>
+              <Square className="h-5 w-5" />
+              <span className="hidden sm:inline">{t.stopButton}</span>
             </button>
           ) : (
             <button
               type="submit"
               disabled={!inputQuery.trim()}
-              className="px-5 py-3 bg-emerald-800 hover:bg-emerald-900 disabled:opacity-40 text-white rounded-xl flex items-center gap-2 text-xs font-bold shadow-md transition"
+              className="px-6 py-4 bg-emerald-800 hover:bg-emerald-900 disabled:opacity-40 text-white rounded-2xl flex items-center gap-2 text-base font-bold shadow-md transition"
             >
-              <Send className="h-4 w-4" />
-              <span>{t.sendButton}</span>
+              <Send className="h-5 w-5" />
+              <span className="hidden sm:inline">{t.sendButton}</span>
             </button>
           )}
         </div>

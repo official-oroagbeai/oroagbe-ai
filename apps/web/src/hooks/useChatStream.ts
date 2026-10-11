@@ -46,107 +46,107 @@ export function useChatStream() {
       const assistantMsgId = `asst-${Date.now()}`;
       const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      // Add user message immediately
+      // Add user message immediately and an empty placeholder for the assistant
       setMessages((prev) => [
         ...prev,
-        {
-          id: userMsgId,
-          role: 'user',
-          content: query.trim().normalize('NFC'),
-          timestamp
-        },
-        {
-          id: assistantMsgId,
-          role: 'assistant',
-          content: '',
-          timestamp
-        }
+        { id: userMsgId, role: 'user', content: query.trim().normalize('NFC'), timestamp },
+        { id: assistantMsgId, role: 'assistant', content: '', timestamp }
       ]);
 
       setIsStreaming(true);
 
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
       try {
-        const response = await fetch(`${apiUrl}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: query.trim().normalize('NFC'),
-            locationId,
-            locationName,
-            crop: crop || undefined
-          }),
-          signal: controller.signal
-        });
+        // 1. Primary Attempt: Puter.js (Client-side, free AI)
+        const response = await (window as any).puter.ai.chat(query.trim());
+        const replyText = response?.message?.content || response?.text || String(response);
 
-        if (!response.ok) {
-          throw new Error(`Server returned HTTP ${response.status}: ${response.statusText}`);
-        }
+        // Directly replace the empty assistant placeholder with the full response
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMsgId ? { ...msg, content: replyText } : msg
+          )
+        );
+      } catch (puterErr) {
+        console.warn('Puter.js failed, falling back to backend SSE...', puterErr);
 
-        if (!response.body) {
-          throw new Error('ReadableStream not supported by the response.');
-        }
+        // 2. Fallback Attempt: Original Backend SSE fetch
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
-        let buffer = '';
+        try {
+          const response = await fetch(`${apiUrl}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: query.trim().normalize('NFC'),
+              locationId,
+              locationName,
+              crop: crop || undefined
+            }),
+            signal: controller.signal
+          });
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+          if (!response.ok) {
+            throw new Error(`Server returned HTTP ${response.status}`);
+          }
+          if (!response.body) {
+            throw new Error('ReadableStream not supported by the response.');
+          }
 
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n\n');
-          buffer = lines.pop() || ''; // Keep partial line in buffer
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
 
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith('data:')) continue;
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-            const payloadStr = trimmed.slice(5).trim();
-            if (payloadStr === '[DONE]') {
-              setIsStreaming(false);
-              return;
-            }
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || '';
 
-            try {
-              const data = JSON.parse(payloadStr);
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed.startsWith('data:')) continue;
+              const payloadStr = trimmed.slice(5).trim();
 
-              if (data.error) {
-                setError(data.error);
-                continue;
+              if (payloadStr === '[DONE]') break;
+
+              try {
+                const data = JSON.parse(payloadStr);
+
+                if (data.error) {
+                  setError(data.error);
+                  continue;
+                }
+
+                if (data.safetyNotice && data.text) {
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMsgId
+                        ? { ...msg, safetyNotice: (msg.safetyNotice || '') + data.text }
+                        : msg
+                    )
+                  );
+                } else if (data.text) {
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantMsgId
+                        ? { ...msg, content: (msg.content + data.text).normalize('NFC') }
+                        : msg
+                    )
+                  );
+                }
+              } catch {
+                // Ignore partial chunks
               }
-
-              if (data.safetyNotice && data.text) {
-                // Attach safety advisory to the assistant message
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMsgId
-                      ? { ...msg, safetyNotice: (msg.safetyNotice || '') + data.text }
-                      : msg
-                  )
-                );
-              } else if (data.text) {
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMsgId
-                      ? { ...msg, content: (msg.content + data.text).normalize('NFC') }
-                      : msg
-                  )
-                );
-              }
-            } catch {
-              // Ignore partial JSON chunks
             }
           }
-        }
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          setError(err.message || 'Error occurred while streaming the response.');
+        } catch (err: any) {
+          if (err.name !== 'AbortError') {
+            setError(err.message || 'Network error occurred while fetching fallback response.');
+          }
         }
       } finally {
         setIsStreaming(false);
@@ -156,12 +156,5 @@ export function useChatStream() {
     [stopStreaming]
   );
 
-  return {
-    messages,
-    isStreaming,
-    error,
-    sendMessage,
-    stopStreaming,
-    clearMessages
-  };
+  return { messages, isStreaming, error, sendMessage, stopStreaming, clearMessages };
 }
