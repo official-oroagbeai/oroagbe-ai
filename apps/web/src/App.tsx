@@ -146,9 +146,21 @@ export default function App() {
         for (const line of lines) {
           if (line.startsWith('data: ') && line !== 'data: [DONE]') {
             const data = JSON.parse(line.replace('data: ', ''));
-            setMessages(prev => prev.map(msg => 
-              msg.id === assistantMsgId ? { ...msg, text: msg.text + data.text } : msg
-            ));
+            
+            // 1. Check if the backend sent an error
+            if (data.error) {
+              setMessages(prev => prev.map(msg => 
+                msg.id === assistantMsgId ? { ...msg, text: msg.text + "\n\n**Aṣiṣe (Error):** " + data.error } : msg
+              ));
+              continue;
+            }
+
+            // 2. Otherwise, append the text safely
+            if (data.text) {
+              setMessages(prev => prev.map(msg => 
+                msg.id === assistantMsgId ? { ...msg, text: msg.text + data.text } : msg
+              ));
+            }
           }
         }
       }
