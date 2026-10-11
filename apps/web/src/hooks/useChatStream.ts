@@ -68,7 +68,7 @@ export function useChatStream() {
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
       try {
         const response = await fetch(`${apiUrl}/api/chat`, {

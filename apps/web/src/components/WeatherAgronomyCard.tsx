@@ -34,7 +34,7 @@ export const WeatherAgronomyCard: React.FC<WeatherAgronomyCardProps> = ({
     setLoading(true);
     setError(null);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = import.meta.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
       const res = await fetch(`${apiUrl}/api/weather/${locationId}`);
       if (!res.ok) {
         throw new Error(`Weather feed HTTP ${res.status}`);

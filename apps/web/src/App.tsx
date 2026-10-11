@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, Square } from 'lucide-react';
 import { ChatMessage } from '@oroagbe/types';
 
+// Use environment variable for the API base, falling back to localhost for local development
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
@@ -74,7 +77,8 @@ export default function App() {
     formData.append('audio', audioBlob, 'voice_note.webm');
 
     try {
-      const response = await fetch('https://oroagbeai-api.onrender.com/api/asr', {
+      // UPDATED: Use dynamic API_BASE
+      const response = await fetch(`${API_BASE}/api/asr`, {
         method: 'POST',
         body: formData,
       });
@@ -117,13 +121,13 @@ export default function App() {
     }]);
 
     try {
-      const response = await fetch('https://oroagbeai-api.onrender.com/api/chat', {
+      // UPDATED: Use dynamic API_BASE
+      const response = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: text,
-          locationId: '3c30a6ef-bfee-4ee4-b8e4-eb00568d2374',
-          conversationId: 'conv-123'
+          query: text, // <-- CRITICAL FIX: Changed from 'message' to 'query' to match backend schema
+          locationId: '3c30a6ef-bfee-4ee4-b8e4-eb00568d2374'
         }),
       });
 
@@ -169,7 +173,6 @@ export default function App() {
           src="/oroagbeai-logo.png" 
           alt="OroAgbeAI Logo" 
         />
-        
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -244,4 +247,4 @@ export default function App() {
       </div>
     </div>
   );
-}
+}s

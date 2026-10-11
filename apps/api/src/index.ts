@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import routes from './routes/index.js';
 import { locationsRouter } from './routes/locations.js';
+import { chatRouter } from './routes/chat.js'; // <-- ADDED: Import the chat router
 import { whatsappClient } from './services/whatsapp.js';
 import { parseWhatsAppWebhook, ParsedWhatsAppMessage } from './services/whatsappParser.js';
 
@@ -9,7 +10,7 @@ const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 
 // 1. Core global middleware
-app.use(cors());
+app.use(cors({ origin: '*' })); // <-- UPDATED: Explicitly allow all origins for Render
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -21,8 +22,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// 2. Healthcheck for Render Deployment
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (_req: Request, res: Response) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // ---------------------------------------------------------------------------
-// 2. WhatsApp Webhook Endpoints (MUST precede general /api route guards)
+// 3. WhatsApp Webhook Endpoints (MUST precede general /api route guards)
 // ---------------------------------------------------------------------------
 
 // GET: Meta Webhook Challenge Verification
@@ -121,13 +131,29 @@ async function handleFarmerMessage(msg: ParsedWhatsAppMessage) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Application API Routes
+// 4. Application API Routes
 // ---------------------------------------------------------------------------
+app.use('/api/chat', chatRouter); // <-- ADDED: Frontend needs this to stream LLM responses
 app.use('/api/locations', locationsRouter);
 app.use('/api', routes);
 
 // ---------------------------------------------------------------------------
-// 4. Server Initialization
+// 5. Global Error Handler & 404 Fallback
+// ---------------------------------------------------------------------------
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
+
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+  const statusCode = err.status || err.statusCode || 500;
+  console.error(`[Error] ${req.path}:`, err.message);
+  res.status(statusCode).json({
+    error: err.message || 'Internal Server Error',
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 6. Server Initialization
 // ---------------------------------------------------------------------------
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend server is running on http://127.0.0.1:${PORT}`);
