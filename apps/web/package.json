@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@heyputer/puter.js": "^2.6.4",
     "@oroagbe/types": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^0.451.0",
